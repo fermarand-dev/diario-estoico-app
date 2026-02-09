@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  --bg-main: #050505;
+  --bg-card: #141414;
+  --text-gold: #EAD7C1;
+  --text-body: #A0A0A0;
+  --btn-color: #E09F5E;     /* Laranja Terracota */
+  --btn-premium: #D4AF37;   /* Dourado para o botão de assinar */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-body);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* Centraliza tudo por padrão */
+}
+
+.logo-area {
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  color: var(--text-gold);
+  font-size: 2.5rem;
+  margin: 10px 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-body);
+  font-size: 1rem;
+  margin-bottom: 40px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* Card Principal */
+.feature-card {
+  background-color: var(--bg-card);
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;       /* Para alinhar conteúdo interno */
+  flex-direction: column;
+  align-items: center; /* Centraliza itens dentro do card */
+}
+
+.card-accent {
+  width: 40px;
+  height: 4px;
+  background-color: var(--btn-color);
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+
+.feature-card h3 {
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  margin: 0 0 15px 0;
+  font-size: 1.4rem; /* Um pouco maior */
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  margin: 0 0 25px 0;
+  color: #888;
+  max-width: 90%;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.api-input {
+  width: 100%;
+  padding: 12px;
+  background: #0F0F0F;
+  border: 1px solid #333;
+  color: #ddd;
+  border-radius: 8px;
+  text-align: center; /* Texto da chave centralizado também */
+}
+
+/* Botão Padrão (Iniciar Jornada) */
+.btn-terracotta {
+  background-color: var(--btn-color);
+  color: #1a1a1a;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+/* Botão Premium (Assinar) */
+.btn-premium {
+  background-color: var(--btn-premium); /* Dourado */
+  color: #000;
+  font-weight: bold;
+  animation: pulse 2s infinite; /* Chama atenção suavemente */
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+.btn-terracotta:disabled {
+  opacity: 0.5;
+  cursor: wait;
+  animation: none;
+}
+
+.result-area {
+  margin-top: 30px;
+  padding: 20px;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+.reflexao-texto {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: #EAD7C1; /* Texto levemente dourado/bege */
+  line-height: 1.8;
+  font-style: italic;
+  white-space: pre-line;
+}
