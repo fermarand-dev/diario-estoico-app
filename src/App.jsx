@@ -72,15 +72,19 @@ function AuthScreen({ onLogin }) {
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#000", color: "#E09F5E" }}>
       <div style={containerStyle}>
         
-        {/* LOGO E TÍTULO */}
-        <div style={{ marginBottom: "30px" }}>
-          <div style={{ fontSize: "60px", marginBottom: "10px" }}>🧘‍♂️</div>
+                {/* LOGO E TÍTULO - CORRIGIDO */}
+                <div style={{ marginBottom: "30px" }}>
+          <img 
+            src="https://i.ibb.co/DHZ01tDR/Screenshot-20260108-003406-Edge-4.jpg" 
+            alt="Logo Estoicismo" 
+            style={{ width: "120px", marginBottom: "20px", borderRadius: "10px" }} 
+          />
           <h1 style={{ fontSize: "2rem", margin: "0 0 10px 0" }}>Estoicismo AI</h1>
           <p style={{ fontSize: "1rem", color: "#ccc", lineHeight: "1.4" }}>
             Seu mentor digital para clareza e autocontrole.
           </p>
         </div>
-
+          
         {/* TELA INICIAL (ESCOLHA) */}
         {mode === "welcome" && (
           <>
