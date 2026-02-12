@@ -35,7 +35,6 @@ function App() {
     async function enviarMensagem() {
       if (!mensagem) return;
       
-      // Mostra mensagem do usuário
       const novaMensagemUsuario = { role: "user", parts: [{ text: mensagem }] };
       const novoHistorico = [...historico, novaMensagemUsuario];
       setHistorico(novoHistorico);
@@ -43,8 +42,13 @@ function App() {
       setCarregando(true);
   
       try {
-        // Chama o Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // 1. INICIALIZAÇÃO FORÇADA (Para garantir que a chave seja lida)
+        // Cole sua chave AIza... aqui dentro das aspas, no lugar do texto
+        const API_KEY = "AIzaSyD-LUxttB48AI7L9vAxPiHvyT-0LOAgkcE"; 
+        
+        const genAI_Local = new GoogleGenerativeAI(API_KEY);
+        const model = genAI_Local.getGenerativeModel({ model: "gemini-pro" });
+        
         const chat = model.startChat({
           history: novoHistorico.slice(0, -1),
         });
@@ -52,14 +56,14 @@ function App() {
         const result = await chat.sendMessage(mensagem);
         const resposta = result.response.text();
   
-        // Mostra resposta da IA
         setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
       } catch (error) {
         console.error("Erro:", error);
-        alert("ERRO DETALHADO: " + ERROR.toString());
+        // ESSE ALERTA VAI NOS CONTAR A VERDADE
+        alert("ERRO NA IA: " + error.toString());
       }
       setCarregando(false);
-    } 
+    }  
 
   // Estilos
   const containerStyle = {
