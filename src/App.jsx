@@ -6,7 +6,7 @@ import './App.css';
 // Configuração Segura (Puxando do .env)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const geminiKey = import.meta.env.VITE_GEMINI_KEY;
+const geminiKey = "AIzaSyD-LUxttB48AI7L9vAxPiHvyT-0LOAgkcE";
 
 // Inicializando os serviços
 const supabase = createClient(supabaseUrl, supabaseKey);
