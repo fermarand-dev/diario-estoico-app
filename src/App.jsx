@@ -44,7 +44,7 @@ function App() {
   
       try {
         // Chama o Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const chat = model.startChat({
           history: novoHistorico.slice(0, -1),
         });
@@ -56,7 +56,7 @@ function App() {
         setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
       } catch (error) {
         console.error("Erro:", error);
-        alert("O mentor está em silêncio (Erro na conexão).");
+        alert("ERRO DETALHADO: " + ERROR.toString());
       }
       setCarregando(false);
     } 
