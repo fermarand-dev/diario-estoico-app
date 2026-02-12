@@ -52,12 +52,14 @@ function App() {
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#000", color: "#E09F5E" }}>
       <div style={containerStyle}>
         
-        {/* --- LOGO CORRIGIDO --- */}
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Marcus_Aurelius_Metropolitan_Museum.png/485px-Marcus_Aurelius_Metropolitan_Museum.png" 
-          alt="Logo Estoicismo" 
-          style={{ width: "120px", marginBottom: "20px", borderRadius: "50%", display: "block", margin: "0 auto 20px auto" }} 
-        />
+           {/* SEU LOGO NOVO */}
+            <img 
+            src="https://i.postimg.cc/tgwfFzSH/Screenshot-20260108-003406-Edge-3.jpg" 
+            alt="Logo Estoicismo" 
+            style={{ width: "120px", marginBottom: "20px", borderRadius: "10px", display: "block", margin: "0 auto 20px auto" }} 
+          />
+
+        
         
         <h1 style={{ fontSize: "2rem", margin: "0 0 10px 0" }}>Estoicismo AI</h1>
         <p style={{ fontSize: "1rem", color: "#ccc", lineHeight: "1.4", marginBottom: "30px" }}>
@@ -76,7 +78,7 @@ function App() {
               QUERO ASSINAR AGORA (R$ 9,90)
             </a>
             <button 
-              onClick={() => alert("Login em breve!")}
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })}
               style={{ ...btnStyle, backgroundColor: "transparent", border: "1px solid #E09F5E", color: "#E09F5E" }}
             >
               JÁ TENHO CONTA / ENTRAR
