@@ -8,21 +8,19 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const geminiKey = import.meta.env.VITE_GEMINI_KEY; 
 
-// Inicializando serviços
-const supabase = createClient(supabaseUrl, supabaseKey);
-const genAI = new GoogleGenerativeAI(geminiKey);
-
 function App() {
+  // --- INICIALIZAÇÃO SEGURA ---
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Estados
   const [session, setSession] = useState(null);
-  
-  // Estados do Chat
   const [mensagem, setMensagem] = useState("");
   const [historico, setHistorico] = useState([
     { role: "model", parts: [{ text: "Olá. Sou seu mentor estoico. O que perturba sua mente hoje?" }] }
   ]);
   const [carregando, setCarregando] = useState(false);
 
-  // Verifica se o usuário está logado
+  // Verifica Login
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -33,23 +31,29 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // --- FUNÇÃO DE ENVIAR MENSAGEM (CORRIGIDA) ---
+  // --- FUNÇÃO DE ENVIAR MENSAGEM (CORRIGIDA E SEGURA) ---
   async function enviarMensagem() {
     if (!mensagem) return;
 
-    // 1. Mostra a mensagem do usuário na tela
+    // 1. Verificação de Segurança da Chave
+    if (!geminiKey) {
+      alert("ERRO CRÍTICO: O arquivo .env não foi lido ou a chave está vazia. Recarregue a página.");
+      return;
+    }
+
+    // 2. Atualiza visual do usuário
     const novaMensagemUsuario = { role: "user", parts: [{ text: mensagem }] };
     const novoHistorico = [...historico, novaMensagemUsuario];
     setHistorico(novoHistorico);
-    setMensagem(""); // Limpa o campo
+    setMensagem(""); 
     setCarregando(true);
 
     try {
-      // 2. Chama a Inteligência Artificial
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-      
-      // CORREÇÃO: O Google exige que o histórico comece com 'user'.
-      // O .slice(1, -1) remove a primeira mensagem (saudação do robô) da memória enviada.
+      // 3. Inicializa a IA somente no momento do envio (Evita erro de inicialização)
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      // Remove a primeira mensagem do histórico para evitar erro de 'role'
       const historicoParaGoogle = novoHistorico.slice(1, -1);
 
       const chat = model.startChat({
@@ -59,7 +63,6 @@ function App() {
       const result = await chat.sendMessage(mensagem);
       const resposta = result.response.text();
 
-      // 3. Mostra a resposta na tela
       setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
     } catch (error) {
       console.error("Erro no Gemini:", error);
@@ -67,7 +70,6 @@ function App() {
     }
     setCarregando(false);
   }
-
 
   // --- ESTILOS ---
   const containerStyle = {
@@ -104,7 +106,7 @@ function App() {
         
         <h1 style={{ fontSize: "2rem", margin: "0 0 10px 0" }}>Estoicismo AI</h1>
         
-        {/* TELA DE LOGIN (Só aparece se NÃO estiver logado) */}
+        {/* TELA DE LOGIN */}
         {!session && (
           <>
             <p style={{ fontSize: "1rem", color: "#ccc", lineHeight: "1.4", marginBottom: "30px" }}>
@@ -127,7 +129,7 @@ function App() {
           </>
         )}
 
-        {/* TELA DO CHAT (Só aparece se ESTIVER logado) */}
+        {/* TELA DO CHAT */}
         {session && (
           <div style={{ textAlign: "left", width: "100%" }}>
             
