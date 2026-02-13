@@ -46,7 +46,7 @@ function App() {
 
     try {
       // 2. Chama a Inteligência Artificial
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
       // CORREÇÃO: O Google exige que o histórico comece com 'user'.
       // O .slice(1, -1) remove a primeira mensagem (saudação do robô) da memória enviada.
