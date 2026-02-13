@@ -3,19 +3,26 @@ import { createClient } from '@supabase/supabase-js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import './App.css';
 
-// Configuração Segura (Puxando do .env)
+// --- CONFIGURAÇÃO ---
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const geminiKey = "AIzaSyD-LUxttB48AI7L9vAxPiHvyT-0LOAgkcE";
+const geminiKey = import.meta.env.VITE_GEMINI_KEY; 
 
-// Inicializando os serviços
+// Inicializando serviços
 const supabase = createClient(supabaseUrl, supabaseKey);
 const genAI = new GoogleGenerativeAI(geminiKey);
 
 function App() {
   const [session, setSession] = useState(null);
-  const [view, setView] = useState("welcome");
+  
+  // Estados do Chat
+  const [mensagem, setMensagem] = useState("");
+  const [historico, setHistorico] = useState([
+    { role: "model", parts: [{ text: "Olá. Sou seu mentor estoico. O que perturba sua mente hoje?" }] }
+  ]);
+  const [carregando, setCarregando] = useState(false);
 
+  // Verifica se o usuário está logado
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -25,47 +32,39 @@ function App() {
     });
     return () => subscription.unsubscribe();
   }, []);
-    // --- LÓGICA DA INTELIGÊNCIA ARTIFICIAL ---
-    const [mensagem, setMensagem] = useState("");
-    const [historico, setHistorico] = useState([
-      { role: "model", parts: [{ text: "Olá. Sou seu mentor estoico. O que perturba sua mente hoje?" }] }
-    ]);
-    const [carregando, setCarregando] = useState(false);
-  
-    async function enviarMensagem() {
-      if (!mensagem) return;
-      
-      const novaMensagemUsuario = { role: "user", parts: [{ text: mensagem }] };
-      const novoHistorico = [...historico, novaMensagemUsuario];
-      setHistorico(novoHistorico);
-      setMensagem("");
-      setCarregando(true);
-  
-      try {
-        // 1. INICIALIZAÇÃO FORÇADA (Para garantir que a chave seja lida)
-        // Cole sua chave AIza... aqui dentro das aspas, no lugar do texto
-        const API_KEY = "AIzaSyD-LUxttB48AI7L9vAxPiHvyT-0LOAgkcE"; 
-        
-        const genAI_Local = new GoogleGenerativeAI(API_KEY);
-        const model = genAI_Local.getGenerativeModel({ model: "gemini-pro" });
-        
-        const chat = model.startChat({
-          history: novoHistorico.slice(0, -1),
-        });
-        
-        const result = await chat.sendMessage(mensagem);
-        const resposta = result.response.text();
-  
-        setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
-      } catch (error) {
-        console.error("Erro:", error);
-        // ESSE ALERTA VAI NOS CONTAR A VERDADE
-        alert("ERRO NA IA: " + error.toString());
-      }
-      setCarregando(false);
-    }  
 
-  // Estilos
+  // --- FUNÇÃO DE ENVIAR MENSAGEM ---
+  async function enviarMensagem() {
+    if (!mensagem) return;
+
+    // 1. Mostra a mensagem do usuário na tela
+    const novaMensagemUsuario = { role: "user", parts: [{ text: mensagem }] };
+    const novoHistorico = [...historico, novaMensagemUsuario];
+    setHistorico(novoHistorico);
+    setMensagem(""); // Limpa o campo
+    setCarregando(true);
+
+    try {
+      // 2. Chama a Inteligência Artificial
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      
+      const chat = model.startChat({
+        history: novoHistorico.slice(0, -1), // Envia o contexto da conversa
+      });
+
+      const result = await chat.sendMessage(mensagem);
+      const resposta = result.response.text();
+
+      // 3. Mostra a resposta na tela
+      setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
+    } catch (error) {
+      console.error("Erro no Gemini:", error);
+      alert("ERRO NA IA: " + error.toString()); // Mostra o erro real na tela
+    }
+    setCarregando(false);
+  }
+
+  // --- ESTILOS ---
   const containerStyle = {
     maxWidth: "400px",
     margin: "0 auto",
@@ -91,23 +90,21 @@ function App() {
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#000", color: "#E09F5E" }}>
       <div style={containerStyle}>
         
-           {/* SEU LOGO NOVO */}
-            <img 
-            src="https://i.postimg.cc/tgwfFzSH/Screenshot-20260108-003406-Edge-3.jpg" 
-            alt="Logo Estoicismo" 
-            style={{ width: "120px", marginBottom: "20px", borderRadius: "10px", display: "block", margin: "0 auto 20px auto" }} 
-          />
-
-        
+        {/* LOGO */}
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Marcus_Aurelius_Metropolitan_Museum.png/485px-Marcus_Aurelius_Metropolitan_Museum.png" 
+          alt="Logo Estoicismo" 
+          style={{ width: "120px", marginBottom: "20px", borderRadius: "50%", display: "block", margin: "0 auto 20px auto" }} 
+        />
         
         <h1 style={{ fontSize: "2rem", margin: "0 0 10px 0" }}>Estoicismo AI</h1>
-        <p style={{ fontSize: "1rem", color: "#ccc", lineHeight: "1.4", marginBottom: "30px" }}>
-          Seu mentor digital para clareza e autocontrole.
-        </p>
-
-        {/* TELA DE BOAS-VINDAS */}
+        
+        {/* TELA DE LOGIN (Só aparece se NÃO estiver logado) */}
         {!session && (
           <>
+            <p style={{ fontSize: "1rem", color: "#ccc", lineHeight: "1.4", marginBottom: "30px" }}>
+              Seu mentor digital para clareza e autocontrole.
+            </p>
             <a 
               href="https://buy.stripe.com/bJedR87b06we1Vh5OT9k401" 
               target="_blank" 
@@ -125,11 +122,11 @@ function App() {
           </>
         )}
 
-         {/* TELA LOGADA - CHAT */}
-         {session && (
-          <div style={{ textAlign: "left", width: "100%", maxWidth: "400px" }}>
+        {/* TELA DO CHAT (Só aparece se ESTIVER logado) */}
+        {session && (
+          <div style={{ textAlign: "left", width: "100%" }}>
             
-            {/* 1. Janela do Chat */}
+            {/* Janela de Mensagens */}
             <div style={{ 
               height: "400px", 
               overflowY: "auto", 
@@ -156,13 +153,13 @@ function App() {
               {carregando && <p style={{ color: "#666", fontSize: "0.9rem", fontStyle: "italic" }}>O mentor está refletindo...</p>}
             </div>
 
-            {/* 2. Campo de Digitar */}
+            {/* Campo de Digitar */}
             <div style={{ display: "flex", gap: "10px" }}>
               <input 
                 type="text" 
                 value={mensagem}
                 onChange={(e) => setMensagem(e.target.value)}
-                placeholder="Peça um conselho estoico..."
+                placeholder="Peça um conselho..."
                 style={{ 
                   flex: 1, 
                   padding: "12px", 
@@ -189,7 +186,6 @@ function App() {
               </button>
             </div>
 
-            {/* 3. Botão de Sair */}
             <button 
               onClick={() => supabase.auth.signOut()} 
               style={{ 
