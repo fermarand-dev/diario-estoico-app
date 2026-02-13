@@ -33,7 +33,7 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // --- FUNÇÃO DE ENVIAR MENSAGEM ---
+  // --- FUNÇÃO DE ENVIAR MENSAGEM (CORRIGIDA) ---
   async function enviarMensagem() {
     if (!mensagem) return;
 
@@ -48,8 +48,12 @@ function App() {
       // 2. Chama a Inteligência Artificial
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       
+      // CORREÇÃO: O Google exige que o histórico comece com 'user'.
+      // O .slice(1, -1) remove a primeira mensagem (saudação do robô) da memória enviada.
+      const historicoParaGoogle = novoHistorico.slice(1, -1);
+
       const chat = model.startChat({
-        history: novoHistorico.slice(0, -1), // Envia o contexto da conversa
+        history: historicoParaGoogle,
       });
 
       const result = await chat.sendMessage(mensagem);
@@ -59,10 +63,11 @@ function App() {
       setHistorico([...novoHistorico, { role: "model", parts: [{ text: resposta }] }]);
     } catch (error) {
       console.error("Erro no Gemini:", error);
-      alert("ERRO NA IA: " + error.toString()); // Mostra o erro real na tela
+      alert("ERRO NA IA: " + error.toString()); 
     }
     setCarregando(false);
   }
+
 
   // --- ESTILOS ---
   const containerStyle = {
